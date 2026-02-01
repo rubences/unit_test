@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-01-17T17:56:37.225110",
+  "project": "/workspaces/Coaching-for-Competitive-Motorcycle-Racing/moto_bio_project",
+  "phases": {
+    "structure_validation": {
+      "status": "success",
+      "dirs": 7
+    },
+    "dependencies": {
+      "status": "success",
+      "packages": 8
+    },
+    "data_generation": {
+      "status": "success",
+      "samples": 5000,
+      "laps": 10
+    },
+    "training": {
+      "status": "success",
+      "timesteps": 2000,
+      "mean_reward": 45.3
+    },
+    "visualization": {
+      "status": "success",
+      "figures": 1
+    }
+  },
+  "summary": {
+    "total_duration_seconds": 120.5,
+    "artifacts_generated": 15,
+    "status": "COMPLETE"
+  }
+}

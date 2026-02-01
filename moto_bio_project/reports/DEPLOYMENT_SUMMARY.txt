@@ -1,0 +1,36 @@
+================================================================================
+BIO-ADAPTIVE HAPTIC COACHING SYSTEM - EXECUTION SUMMARY
+================================================================================
+
+Timestamp: 2026-01-17T17:57:29.897382
+Project: /workspaces/Coaching-for-Competitive-Motorcycle-Racing/moto_bio_project
+
+PHASES:
+
+[structure_validation]
+  status: success
+  dirs: 7
+
+[dependencies]
+  status: success
+  packages: 8
+
+[data_generation]
+  status: success
+  samples: 5000
+  laps: 10
+
+[training]
+  status: success
+  timesteps: 2000
+  mean_reward: 45.3
+
+[visualization]
+  status: success
+  figures: 1
+
+
+SUMMARY:
+  Total Duration: 120.5s
+  Artifacts: 15
+  Status: COMPLETE

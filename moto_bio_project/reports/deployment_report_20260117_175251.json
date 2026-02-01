@@ -1,0 +1,25 @@
+{
+  "phase_1": {
+    "timestamp": "2026-01-17T17:52:43.420350",
+    "status": "success",
+    "dirs_created": 6
+  },
+  "phase_2": {
+    "timestamp": "2026-01-17T17:52:51.572010",
+    "status": "success",
+    "packages_checked": 6,
+    "packages_missing": 0
+  },
+  "phase_3": {
+    "status": "failed",
+    "error": "attempted relative import with no known parent package"
+  },
+  "phase_4": {
+    "status": "warning",
+    "error": "attempted relative import with no known parent package"
+  },
+  "phase_5": {
+    "status": "warning",
+    "error": "attempted relative import with no known parent package"
+  }
+}

@@ -1,0 +1,212 @@
+{
+  "deployment_timestamp": "2026-01-17T18:08:50.767999",
+  "duration_seconds": 95.591125,
+  "workspace": "/workspaces/Coaching-for-Competitive-Motorcycle-Racing",
+  "phases_completed": 9,
+  "artifacts_generated": 1,
+  "metrics": {
+    "phase_1": {
+      "status": "success",
+      "structure": {
+        "workspace_root": "/workspaces/Coaching-for-Competitive-Motorcycle-Racing",
+        "directories": {
+          "src": {
+            "path": "/workspaces/Coaching-for-Competitive-Motorcycle-Racing/src",
+            "exists": true,
+            "files": 5,
+            "file_list": [
+              "vis.py",
+              "env.py",
+              "__init__.py",
+              "train.py",
+              "data_gen.py"
+            ]
+          },
+          "moto_src": {
+            "path": "/workspaces/Coaching-for-Competitive-Motorcycle-Racing/moto_bio_project/src",
+            "exists": true,
+            "files": 7,
+            "file_list": [
+              "config.py",
+              "evaluate.py",
+              "environment.py",
+              "visualize.py",
+              "__init__.py"
+            ]
+          },
+          "tests": {
+            "path": "/workspaces/Coaching-for-Competitive-Motorcycle-Racing/tests",
+            "exists": true,
+            "files": 13,
+            "file_list": [
+              "test_stress_aware_coach.py",
+              "test_digital_twin.py",
+              "test_fusion_net.py",
+              "test_agents.py",
+              "conftest.py"
+            ]
+          },
+          "scripts": {
+            "path": "/workspaces/Coaching-for-Competitive-Motorcycle-Racing/scripts",
+            "exists": true,
+            "files": 8,
+            "file_list": [
+              "hil_bridge.py",
+              "preprocess_data.py",
+              "telemetry_dashboard.py",
+              "train_transformer.py",
+              "generate_biometrics.py"
+            ]
+          },
+          "notebooks": {
+            "path": "/workspaces/Coaching-for-Competitive-Motorcycle-Racing/notebooks",
+            "exists": true,
+            "files": 2,
+            "file_list": [
+              "explainability_analysis.ipynb",
+              "getting_started.ipynb"
+            ]
+          },
+          "simulation": {
+            "path": "/workspaces/Coaching-for-Competitive-Motorcycle-Racing/simulation",
+            "exists": true,
+            "files": 4,
+            "file_list": [
+              "test_motorcycle_env.py",
+              "motorcycle_env.py",
+              "__init__.py",
+              "README.md"
+            ]
+          },
+          "moto_bio_project": {
+            "path": "/workspaces/Coaching-for-Competitive-Motorcycle-Racing/moto_bio_project",
+            "exists": true,
+            "files": 3,
+            "file_list": [
+              "QUICKSTART.md",
+              "INDEX.md",
+              "README.md"
+            ]
+          }
+        },
+        "key_files": {
+          "setup.py": {
+            "exists": true
+          },
+          "requirements.txt": {
+            "exists": true
+          },
+          "moto_requirements.txt": {
+            "exists": true
+          },
+          "pytest.ini": {
+            "exists": true
+          }
+        }
+      },
+      "timestamp": "2026-01-17T18:07:15.177919"
+    },
+    "phase_2": {
+      "status": "success",
+      "modules": {
+        "src": {
+          "count": 5,
+          "files": [
+            "vis.py",
+            "env.py",
+            "__init__.py",
+            "train.py",
+            "data_gen.py"
+          ]
+        },
+        "moto_src": {
+          "count": 7,
+          "files": [
+            "config.py",
+            "evaluate.py",
+            "environment.py",
+            "visualize.py",
+            "__init__.py",
+            "train.py",
+            "data_gen.py"
+          ]
+        },
+        "tests": {
+          "count": 12,
+          "files": [
+            "test_stress_aware_coach.py",
+            "test_digital_twin.py",
+            "test_fusion_net.py",
+            "test_agents.py",
+            "test_haptic.py",
+            "test_biometrics.py",
+            "test_biometric_fusion.py",
+            "test_adversarial_training.py",
+            "test_environments.py",
+            "test_motion_vae.py"
+          ]
+        },
+        "scripts": {
+          "count": 8,
+          "files": [
+            "hil_bridge.py",
+            "preprocess_data.py",
+            "telemetry_dashboard.py",
+            "train_transformer.py",
+            "generate_biometrics.py",
+            "adversarial_training_demo.py",
+            "plot_federated_convergence.py",
+            "download_data.py"
+          ]
+        },
+        "simulation": {
+          "count": 3,
+          "files": [
+            "test_motorcycle_env.py",
+            "motorcycle_env.py",
+            "__init__.py"
+          ]
+        }
+      },
+      "total_modules": 35
+    },
+    "phase_3": {
+      "status": "success",
+      "dependencies_installed": [
+        "moto_bio_project"
+      ]
+    },
+    "phase_4": {
+      "status": "success",
+      "test_results": {
+        "return_code": 1,
+        "output_lines": 245,
+        "status": "with_failures"
+      }
+    },
+    "phase_5": {
+      "status": "failed",
+      "error": "attempted relative import with no known parent package"
+    },
+    "phase_6": {
+      "status": "warning",
+      "error": "attempted relative import with no known parent package"
+    },
+    "phase_7": {
+      "status": "skipped",
+      "reason": "no model"
+    },
+    "phase_8": {
+      "status": "success",
+      "visualizations": 1
+    },
+    "phase_9": {
+      "status": "success",
+      "integrations_verified": 2,
+      "artifacts_consolidated": 1
+    }
+  },
+  "artifacts": [
+    "/workspaces/Coaching-for-Competitive-Motorcycle-Racing/moto_bio_project/logs/training_dashboard.png"
+  ]
+}

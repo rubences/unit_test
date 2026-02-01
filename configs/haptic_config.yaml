@@ -1,0 +1,43 @@
+# Haptic Feedback Configuration
+
+# Device configuration
+device:
+  type: "wristband"
+  id: "haptic_dev_001"
+  connection: "bluetooth"
+  sampling_rate: 50  # Hz
+
+# Feedback patterns
+patterns:
+  acceleration:
+    type: "pulse"
+    intensity_range: [0.3, 0.8]
+    duration: 0.2
+  
+  braking:
+    type: "continuous"
+    intensity_range: [0.5, 1.0]
+    duration: 0.5
+  
+  cornering:
+    type: "gentle"
+    intensity_range: [0.2, 0.6]
+    duration: 0.3
+  
+  warning:
+    type: "strong"
+    intensity_range: [0.8, 1.0]
+    duration: 0.1
+
+# Coaching rules
+coaching:
+  early_apex_warning: true
+  late_apex_warning: true
+  speed_limit_warning: true
+  optimal_line_guidance: true
+  
+  # Thresholds
+  thresholds:
+    speed_deviation: 5.0  # km/h
+    line_deviation: 0.5   # meters
+    apex_timing: 0.2      # seconds

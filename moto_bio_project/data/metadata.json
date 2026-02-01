@@ -1,0 +1,11 @@
+{
+  "num_laps": 3,
+  "total_duration_seconds": 180.0,
+  "circuit_length_km": 1.2,
+  "sampling_rate_telemetry_hz": 100,
+  "sampling_rate_ecg_hz": 500,
+  "mean_speed_kmh": 199.99333444462968,
+  "max_speed_kmh": 299.94999166527754,
+  "mean_hr_bpm": 92.1390064992736,
+  "max_hr_bpm": 112.6728713549496
+}

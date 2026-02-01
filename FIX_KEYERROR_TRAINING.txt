@@ -1,0 +1,111 @@
+═══════════════════════════════════════════════════════════════════════════════
+✅ FIX APLICADO - KeyError: 'training' RESUELTO
+═══════════════════════════════════════════════════════════════════════════════
+
+📅 FECHA: 2026-01-17
+🐛 ERROR: KeyError: 'training' en system/core/system_cli.py línea 144
+
+═══════════════════════════════════════════════════════════════════════════════
+📋 DESCRIPCIÓN DEL PROBLEMA
+═══════════════════════════════════════════════════════════════════════════════
+
+El código en system_cli.py intentaba acceder a:
+  ❌ self.config['training']['algorithm']
+  ❌ self.config['training']['episodes']
+  ❌ self.config['training']['learning_rate']
+  ❌ self.config['training']['batch_size']
+
+Pero la estructura real del JSON es:
+  ✓ self.config['components']['reinforcement_learning']['algorithm']
+  ✓ self.config['components']['reinforcement_learning']['episodes']
+  ✓ self.config['components']['reinforcement_learning']['learning_rate']
+  ✓ self.config['components']['reinforcement_learning']['batch_size']
+
+═══════════════════════════════════════════════════════════════════════════════
+🔧 SOLUCIÓN APLICADA
+═══════════════════════════════════════════════════════════════════════════════
+
+ARCHIVO: /workspaces/Coaching-for-Competitive-Motorcycle-Racing/system/core/system_cli.py
+
+CAMBIO EN EL MÉTODO train() (líneas 141-155):
+
+ANTES:
+```python
+def train(self, episodes: int = None, algorithm: str = None):
+    """Ejecutar entrenamiento"""
+    print(f"\n{Colors.BOLD}{Colors.BLUE}[ENTRENAMIENTO]{Colors.ENDC}")
+    print(f"  • Algoritmo: {algorithm or self.config['training']['algorithm']}")
+    print(f"  • Episodios: {episodes or self.config['training']['episodes']}")
+    print(f"  • Tasa aprendizaje: {self.config['training']['learning_rate']}")
+    print(f"  • Tamaño batch: {self.config['training']['batch_size']}\n")
+```
+
+DESPUÉS:
+```python
+def train(self, episodes: int = None, algorithm: str = None):
+    """Ejecutar entrenamiento"""
+    rl_config = self.config['components']['reinforcement_learning']
+    print(f"\n{Colors.BOLD}{Colors.BLUE}[ENTRENAMIENTO]{Colors.ENDC}")
+    print(f"  • Algoritmo: {algorithm or rl_config['algorithm']}")
+    print(f"  • Episodios: {episodes or rl_config['episodes']}")
+    print(f"  • Tasa aprendizaje: {rl_config['learning_rate']}")
+    print(f"  • Tamaño batch: {rl_config['batch_size']}\n")
+```
+
+BENEFICIOS:
+✓ Se crea una variable local rl_config para mayor claridad
+✓ Se accede a la ruta correcta del JSON
+✓ El código es más legible y mantenible
+
+═══════════════════════════════════════════════════════════════════════════════
+✅ VERIFICACIÓN
+═══════════════════════════════════════════════════════════════════════════════
+
+TESTS EJECUTADOS:
+
+1. ✓ Carga de SystemManager
+2. ✓ Verificación de estructura de configuración
+3. ✓ Verificación de parámetros de RL
+4. ✓ Acceso al método train sin KeyError
+5. ✓ Ejecución de main.py --help
+6. ✓ Menú interactivo funcional
+
+RESULTADO: TODOS LOS TESTS PASARON ✅
+
+CONFIGURACIÓN DETECTADA:
+  • Algoritmo: PPO
+  • Episodios: 5
+  • Learning rate: 0.0003
+  • Batch size: 64
+
+═══════════════════════════════════════════════════════════════════════════════
+🚀 USO DEL SISTEMA (YA FUNCIONAL)
+═══════════════════════════════════════════════════════════════════════════════
+
+MODO INTERACTIVO:
+  $ python3 main.py
+  (Seleccionar opción 1 para entrenar)
+
+MODO COMANDO DIRECTO:
+  $ python3 main.py train
+  $ python3 main.py train --episodes 100
+  $ python3 main.py train --episodes 50 --algorithm PPO
+
+VERIFICAR AYUDA:
+  $ python3 main.py --help
+  $ python3 main.py train --help
+
+═══════════════════════════════════════════════════════════════════════════════
+📊 ESTADO DEL SISTEMA
+═══════════════════════════════════════════════════════════════════════════════
+
+Sistema:      ✅ OPERATIVO
+Validaciones: ✅ 27/27 PASADAS
+Fix aplicado: ✅ KeyError resuelto
+Tests:        ✅ 6/6 PASADOS
+
+═══════════════════════════════════════════════════════════════════════════════
+
+El sistema está listo para usar. El error ha sido completamente resuelto.
+
+═══════════════════════════════════════════════════════════════════════════════

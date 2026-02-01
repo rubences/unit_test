@@ -1,0 +1,53 @@
+# Training Configuration for Moto-Edge-RL
+
+# Model configuration
+model:
+  algorithm: "PPO"
+  policy: "MlpPolicy"
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.01
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+
+# Environment configuration
+environment:
+  track_name: "silverstone"
+  max_episode_steps: 1000
+  observation_space:
+    - velocity
+    - acceleration
+    - position
+    - orientation
+    - track_curvature
+  action_space:
+    - throttle
+    - brake
+    - steering
+
+# Training configuration
+training:
+  total_timesteps: 1000000
+  eval_freq: 10000
+  n_eval_episodes: 5
+  save_freq: 50000
+  log_interval: 10
+  verbose: 1
+
+# Logging configuration
+logging:
+  tensorboard: true
+  wandb: false
+  log_dir: "logs"
+  run_name: "ppo_racing_default"
+
+# Checkpoint configuration
+checkpoints:
+  save_dir: "models/checkpoints"
+  keep_n_best: 5
+  metric: "reward"

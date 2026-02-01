@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motorcycle Digital Twin - 3D Visualizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100vh;
+            display: block;
+        }
+
+        #hud {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            z-index: 100;
+            min-width: 250px;
+        }
+
+        .hud-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 10px;
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+
+        .hud-label {
+            color: #00ff00;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .hud-value {
+            color: #ffffff;
+            text-align: left;
+        }
+
+        #trajectory-stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff0000;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            z-index: 100;
+        }
+
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 100;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        #connection-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 100;
+        }
+
+        .connected {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .disconnected {
+            background: #ff0000;
+            color: #fff;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+
+        #info-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ffff00;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            z-index: 100;
+        }
+
+        .episode-done {
+            background: rgba(255, 100, 0, 0.8);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="hud">
+        <div style="color: #00ff00; font-weight: bold; margin-bottom: 10px;">📍 POSICIÓN</div>
+        <div class="hud-row">
+            <span class="hud-label">X:</span>
+            <span class="hud-value" id="pos-x">0.000</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">Y:</span>
+            <span class="hud-value" id="pos-y">0.000</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">Z:</span>
+            <span class="hud-value" id="pos-z">0.000</span>
+        </div>
+
+        <div style="color: #ffff00; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">🎯 ROTACIÓN</div>
+        <div class="hud-row">
+            <span class="hud-label">Roll:</span>
+            <span class="hud-value" id="rot-roll">0.000°</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">Pitch:</span>
+            <span class="hud-value" id="rot-pitch">0.000°</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">Yaw:</span>
+            <span class="hud-value" id="rot-yaw">0.000°</span>
+        </div>
+
+        <div style="color: #ff00ff; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">⚡ CONTROL</div>
+        <div class="hud-row">
+            <span class="hud-label">Speed:</span>
+            <span class="hud-value" id="speed">0.00 m/s</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">Throttle:</span>
+            <span class="hud-value" id="throttle">0%</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">Brake:</span>
+            <span class="hud-value" id="brake">0%</span>
+        </div>
+    </div>
+
+    <div id="trajectory-stats">
+        <div style="color: #ff0000; font-weight: bold; margin-bottom: 8px;">📈 TRAYECTORIAS</div>
+        <div class="hud-row">
+            <span class="hud-label">Real:</span>
+            <span class="hud-value" id="traj-real">0 pts</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">Predicción:</span>
+            <span class="hud-value" id="traj-pred">0 pts</span>
+        </div>
+        <div class="hud-row">
+            <span class="hud-label">Error:</span>
+            <span class="hud-value" id="traj-error">0.00 m</span>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div style="color: #00ffff; font-weight: bold; margin-bottom: 8px;">🎨 LEYENDA</div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff0000;"></div>
+            <span>Trayectoria Predicha</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #00ff00;"></div>
+            <span>Trayectoria Real</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #0088ff;"></div>
+            <span>Moto 3D</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #888888;"></div>
+            <span>Pista</span>
+        </div>
+    </div>
+
+    <div id="connection-status" class="disconnected">
+        ● DESCONECTADO
+    </div>
+
+    <div id="info-panel">
+        <span id="info-text">Esperando conexión...</span>
+    </div>
+
+    <script>
+        // ========== THREE.JS SCENE SETUP ==========
+        const canvas = document.getElementById('canvas') || document.createElement('canvas');
+        let scene, camera, renderer;
+        let motorcycle, trajectoryReal, trajectoryPredicted;
+        let trajectoryRealPoints = [], trajectoryPredictedPoints = [];
+
+        function initScene() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+            scene.fog = new THREE.Fog(0x000000, 100, 500);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 5, 20);
+            camera.lookAt(0, 0, 0);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 50, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+
+            // Ground plane (track)
+            const groundGeometry = new THREE.PlaneGeometry(200, 200);
+            const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x2a4a2a });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Grid helper
+            const gridHelper = new THREE.GridHelper(200, 40, 0x444444, 0x222222);
+            scene.add(gridHelper);
+
+            // Create motorcycle model (simple box for now)
+            createMotorcycle();
+
+            // Initialize trajectory lines
+            initializeTrajectories();
+
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+
+            // Start animation loop
+            animate();
+        }
+
+        function createMotorcycle() {
+            // Main body
+            const bodyGeometry = new THREE.BoxGeometry(0.5, 0.4, 2);
+            const bodyMaterial = new THREE.MeshStandardMaterial({
+                color: 0x0088ff,
+                metalness: 0.8,
+                roughness: 0.2,
+            });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.castShadow = true;
+            body.receiveShadow = true;
+
+            // Wheels
+            const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
+            const wheelMaterial = new THREE.MeshStandardMaterial({
+                color: 0x000000,
+                metalness: 0.9,
+            });
+
+            const wheelFront = new THREE.Mesh(wheelGeometry, wheelMaterial);
+            wheelFront.rotation.z = Math.PI / 2;
+            wheelFront.position.set(0, 0.2, 0.8);
+            wheelFront.castShadow = true;
+
+            const wheelRear = new THREE.Mesh(wheelGeometry, wheelMaterial);
+            wheelRear.rotation.z = Math.PI / 2;
+            wheelRear.position.set(0, 0.2, -0.8);
+            wheelRear.castShadow = true;
+
+            // Cockpit (helmet indicator)
+            const cockpitGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+            const cockpitMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+            const cockpit = new THREE.Mesh(cockpitGeometry, cockpitMaterial);
+            cockpit.position.set(0, 0.5, 0);
+            cockpit.castShadow = true;
+
+            // Group all parts
+            motorcycle = new THREE.Group();
+            motorcycle.add(body);
+            motorcycle.add(wheelFront);
+            motorcycle.add(wheelRear);
+            motorcycle.add(cockpit);
+
+            scene.add(motorcycle);
+        }
+
+        function initializeTrajectories() {
+            // Real trajectory line (green)
+            const materialReal = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 2 });
+            const geometryReal = new THREE.BufferGeometry();
+            geometryReal.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3), 3));
+            trajectoryReal = new THREE.Line(geometryReal, materialReal);
+            scene.add(trajectoryReal);
+
+            // Predicted trajectory line (red)
+            const materialPredicted = new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 2 });
+            const geometryPredicted = new THREE.BufferGeometry();
+            geometryPredicted.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3), 3));
+            trajectoryPredicted = new THREE.Line(geometryPredicted, materialPredicted);
+            scene.add(trajectoryPredicted);
+        }
+
+        function updateTrajectories() {
+            // Update real trajectory
+            if (trajectoryRealPoints.length > 0) {
+                const pointsReal = new Float32Array(trajectoryRealPoints.flat());
+                trajectoryReal.geometry.setAttribute('position', new THREE.BufferAttribute(pointsReal, 3));
+                trajectoryReal.geometry.attributes.position.needsUpdate = true;
+            }
+
+            // Update predicted trajectory
+            if (trajectoryPredictedPoints.length > 0) {
+                const pointsPredicted = new Float32Array(trajectoryPredictedPoints.flat());
+                trajectoryPredicted.geometry.setAttribute('position', new THREE.BufferAttribute(pointsPredicted, 3));
+                trajectoryPredicted.geometry.attributes.position.needsUpdate = true;
+            }
+        }
+
+        function updateMotorcyclePosition(position, rotation) {
+            if (motorcycle) {
+                motorcycle.position.set(position[0], position[1], position[2]);
+                motorcycle.rotation.order = 'XYZ';
+                motorcycle.rotation.set(rotation[0], rotation[1], rotation[2]);
+            }
+        }
+
+        function updateHUD(telemetry) {
+            const data = telemetry.data;
+            
+            // Position
+            document.getElementById('pos-x').textContent = data.position[0].toFixed(3);
+            document.getElementById('pos-y').textContent = data.position[1].toFixed(3);
+            document.getElementById('pos-z').textContent = data.position[2].toFixed(3);
+
+            // Rotation
+            const roll = data.rotation[0] * 180 / Math.PI;
+            const pitch = data.rotation[1] * 180 / Math.PI;
+            const yaw = data.rotation[2] * 180 / Math.PI;
+            document.getElementById('rot-roll').textContent = roll.toFixed(1) + '°';
+            document.getElementById('rot-pitch').textContent = pitch.toFixed(1) + '°';
+            document.getElementById('rot-yaw').textContent = yaw.toFixed(1) + '°';
+
+            // Control
+            document.getElementById('speed').textContent = data.speed.toFixed(2) + ' m/s';
+            document.getElementById('throttle').textContent = (data.throttle * 100).toFixed(0) + '%';
+            document.getElementById('brake').textContent = (data.brake * 100).toFixed(0) + '%';
+
+            // Trajectory stats
+            document.getElementById('traj-real').textContent = trajectoryRealPoints.length + ' pts';
+            document.getElementById('traj-pred').textContent = trajectoryPredictedPoints.length + ' pts';
+
+            // Calculate trajectory error
+            if (trajectoryRealPoints.length > 0 && trajectoryPredictedPoints.length > 0) {
+                const lastReal = trajectoryRealPoints[trajectoryRealPoints.length - 1];
+                const lastPred = trajectoryPredictedPoints[trajectoryPredictedPoints.length - 1];
+                const error = Math.sqrt(
+                    Math.pow(lastReal[0] - lastPred[0], 2) +
+                    Math.pow(lastReal[1] - lastPred[1], 2) +
+                    Math.pow(lastReal[2] - lastPred[2], 2)
+                );
+                document.getElementById('traj-error').textContent = error.toFixed(2) + ' m';
+            }
+
+            // Info panel
+            const info = data.episode_info;
+            const infoText = `Episode ${info.episode} | Step ${info.step} | Reward: ${data.reward.toFixed(2)}`;
+            document.getElementById('info-text').textContent = infoText;
+
+            if (info.done) {
+                document.getElementById('info-panel').classList.add('episode-done');
+            } else {
+                document.getElementById('info-panel').classList.remove('episode-done');
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update camera to follow motorcycle
+            if (motorcycle) {
+                const targetX = motorcycle.position.x - Math.sin(motorcycle.rotation.z) * 20;
+                const targetZ = motorcycle.position.z + Math.cos(motorcycle.rotation.z) * 20;
+                
+                camera.position.x += (targetX - camera.position.x) * 0.1;
+                camera.position.z += (targetZ - camera.position.z) * 0.1;
+                camera.position.y = motorcycle.position.y + 5;
+                camera.lookAt(motorcycle.position);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // ========== WEBSOCKET CLIENT ==========
+        let ws;
+        const statusElement = document.getElementById('connection-status');
+
+        function connectWebSocket() {
+            ws = new WebSocket('ws://localhost:5555');
+
+            ws.onopen = () => {
+                console.log('✓ Conectado al servidor');
+                statusElement.textContent = '● CONECTADO';
+                statusElement.classList.remove('disconnected');
+                statusElement.classList.add('connected');
+                document.getElementById('info-text').textContent = 'Conectado - Esperando datos...';
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const message = JSON.parse(event.data);
+
+                    if (message.type === 'telemetry') {
+                        const telemetry = message.data;
+
+                        // Update motorcycle position and rotation
+                        updateMotorcyclePosition(telemetry.position, telemetry.rotation);
+
+                        // Update trajectories
+                        trajectoryRealPoints.push(telemetry.position);
+                        trajectoryPredictedPoints.push(telemetry.prediction);
+
+                        // Keep only last 500 points
+                        if (trajectoryRealPoints.length > 500) {
+                            trajectoryRealPoints.shift();
+                            trajectoryPredictedPoints.shift();
+                        }
+
+                        updateTrajectories();
+                        updateHUD(message);
+                    } else if (message.type === 'init') {
+                        // Initialize with history
+                        trajectoryRealPoints = message.trajectory.real || [];
+                        trajectoryPredictedPoints = message.trajectory.predicted || [];
+                        updateTrajectories();
+                    }
+                } catch (e) {
+                    console.error('Error parsing message:', e);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                statusElement.textContent = '● ERROR';
+            };
+
+            ws.onclose = () => {
+                console.log('✗ Desconectado del servidor');
+                statusElement.textContent = '● DESCONECTADO';
+                statusElement.classList.remove('connected');
+                statusElement.classList.add('disconnected');
+                
+                // Intentar reconectar en 3 segundos
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        // ========== INITIALIZE ==========
+        window.addEventListener('DOMContentLoaded', () => {
+            initScene();
+            connectWebSocket();
+        });
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' || e.key === 'R') {
+                // Reset view
+                trajectoryRealPoints = [];
+                trajectoryPredictedPoints = [];
+                updateTrajectories();
+                camera.position.set(0, 5, 20);
+            }
+        });
+    </script>
+</body>
+</html>

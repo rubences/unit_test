@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  training:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: moto-edge-rl-training
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./configs:/app/configs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - CUDA_VISIBLE_DEVICES=0
+    command: python -m moto_edge_rl.train --config /app/configs/train_config.yaml
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  evaluation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: moto-edge-rl-evaluation
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: python -m moto_edge_rl.evaluate --model-path /app/models/best_model.pt
+
+  tensorboard:
+    image: tensorflow/tensorflow:latest
+    container_name: moto-edge-rl-tensorboard
+    ports:
+      - "6006:6006"
+    volumes:
+      - ./logs:/logs
+    command: tensorboard --logdir /logs --host 0.0.0.0
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: moto-edge-rl-jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/app/notebooks
+      - ./data:/app/data
+      - ./models:/app/models
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --notebook-dir=/app/notebooks

@@ -1,0 +1,95 @@
+# ============================================================================
+# MOTO-EDGE-RL TRAINING AND DEPLOYMENT PIPELINE
+# ============================================================================
+# Core ML/RL dependencies
+torch>=2.0.0
+numpy>=1.24.0
+ # gym removed: use Gymnasium (maintained)
+ gradio>=4.0.0
+stable-baselines3>=2.0.0,<3.0
+sb3-contrib>=2.0.0
+
+# Environment and simulation (Farama Foundation Stack)
+pybullet>=3.2.5
+gymnasium>=0.29.0
+pettingzoo>=1.24.0
+minari>=0.4.0
+mo-gymnasium>=1.0.0
+shimmy>=1.0.0  # PettingZoo-Gymnasium compatibility layer
+
+# Graph Neural Networks (V2V Safety System)
+torch-geometric>=2.3.0  # GNN library for vehicle-to-vehicle collision prediction
+
+# Data processing
+pandas>=2.0.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+h5py>=3.8.0  # HDF5 support for Minari datasets
+neurokit2>=0.2.0  # Biometric signal processing (ECG, HRV)
+
+# Deep learning and model conversion
+tensorflow>=2.13.0  # Required for TFLite conversion
+tensorflow-lite-support>=0.4.0  # TFLite runtime utilities
+
+# ONNX conversion pipeline (PyTorch -> ONNX -> TensorFlow -> TFLite)
+onnx>=1.14.0
+onnx-tf>=1.10.0  # ONNX to TensorFlow converter
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.14.0
+tensorboard>=2.13.0
+
+# Haptic and sensor interfaces
+pyserial>=3.5
+smbus2>=0.4.2
+
+# Configuration management
+pyyaml>=6.0
+omegaconf>=2.3.0
+hydra-core>=1.3.0
+
+# Logging and monitoring
+wandb>=0.15.0
+mlflow>=2.5.0
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+
+# Code quality
+black>=23.7.0
+flake8>=6.0.0
+mypy>=1.4.0
+isort>=5.12.0
+pre-commit>=3.3.0
+
+# Documentation
+sphinx>=7.0.0
+sphinx-rtd-theme>=1.3.0
+sphinx-autodoc-typehints>=1.24.0
+
+# Utilities
+tqdm>=4.65.0
+python-dotenv>=1.0.0
+click>=8.1.0
+
+# ============================================================================
+# PIPELINE SCRIPTS REQUIREMENTS
+# ============================================================================
+# src/data/generate_synthetic_data.py
+#   - numpy, h5py, gymnasium (already included)
+#
+# src/training/train_hybrid.py
+#   - gymnasium, stable-baselines3, h5py, tensorboard (already included)
+#   - Optional: tensorboard for training visualization
+#
+# src/deployment/export_to_edge.py
+#   - torch, onnx, onnx-tf, tensorflow, tensorflow-lite-support (above)
+#   - Converts PPO to ONNX, TensorFlow SavedModel, TFLite with int8 quantization
+#
+# run_pipeline.sh
+#   - Bash script, no additional dependencies (uses Python scripts above)
+# ============================================================================

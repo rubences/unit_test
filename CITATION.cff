@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Moto-Edge-RL: Active Haptic Coaching for Competitive Motorcycle Racing"
+authors:
+  - family-names: "Rubences"
+    given-names: ""
+repository-code: "https://github.com/rubences/Coaching-for-Competitive-Motorcycle-Racing"
+url: "https://github.com/rubences/Coaching-for-Competitive-Motorcycle-Racing"
+abstract: "A cutting-edge research project that leverages reinforcement learning and active haptic feedback to provide real-time coaching for competitive motorcycle racing."
+keywords:
+  - reinforcement-learning
+  - haptic-feedback
+  - motorcycle-racing
+  - machine-learning
+  - sports-coaching
+  - deep-learning
+  - robotics
+license: MIT
+version: 0.1.0
+date-released: 2026-01-17
